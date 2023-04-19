@@ -37,6 +37,7 @@ struct DanhSach
 typedef DanhSach danhSach;
 
 // Các hàm sử dụng
+// menu
 void menu();
 void nhapNgayThang(date &ntn);
 NhanVien nhap1NV(danhSach &ds);
@@ -46,17 +47,20 @@ void nhapDanhSachNV(danhSach &ds);
 void xuatDanhSachNV(danhSach ds);
 void timTheoTen(danhSach ds, char *c, danhSach &dsKetQua);
 void themNV(danhSach &ds, nhanVien &nv, int viTri);
-int timTheoMa(danhSach ds, int viTri);
-void xoaNV(danhSach ds, int viTri);
-// ktra
+int timTheoMa(danhSach ds, int ma);
+void xoaNV(danhSach &ds, int vt);
+void sapXep(danhSach ds);
 // kiểm tra int
 int checkInputInteger(char err[1000]);
 int kiemTraNgayThang(date &ntn);
 int kiemTraNamNhuan(int nam);
-//
+void swap(nhanVien &a, nhanVien &b);
+// case
 void case1(danhSach &ds);
 void case2(danhSach ds);
 void case3(danhSach ds);
+void case4(danhSach ds);
+void case5(danhSach &ds);
 
 int main()
 {
@@ -64,7 +68,7 @@ int main()
     getch();
     return 0;
 }
-
+// menu
 void menu()
 {
     danhSach ds;
@@ -74,6 +78,9 @@ void menu()
     nhapDanhSachNV(ds);
     do
     {
+        printf("\t-------------------");
+        printf("\n\tDanh sach nhan vien");
+        printf("\n\t-------------------");
         xuatDanhSachNV(ds);
         printf("\n****************MENU****************\n");
         printf("1.Them vao 1 nhan vien.\n");
@@ -90,15 +97,14 @@ void menu()
         switch (chon)
         {
         case 1:
+            printf("Ban da chon them mot nhan vien: \n");
             case1(ds);
             printf("\nBam phim bat ky de tiep tuc");
             getch();
             system("cls");
             break;
         case 2:
-            // code
             case2(ds);
-            //
             printf("\nBam phim bat ky de tiep tuc");
             getch();
             system("cls");
@@ -110,19 +116,13 @@ void menu()
             system("cls");
             break;
         case 4:
-            printf("Case 4");
-            // code
-
-            //
+            case4(ds);
             printf("\nBam phim bat ky de tiep tuc");
             getch();
             system("cls");
             break;
         case 5:
-            printf("Case 5");
-            // code
-
-            //
+            case5(ds);
             printf("\nBam phim bat ky de tiep tuc");
             getch();
             system("cls");
@@ -136,21 +136,31 @@ void menu()
         }
     } while (1);
 }
-
+// case 1:
 void case1(danhSach &ds)
 {
     int viTriThem = -1;
     nhanVien nvm;
-    printf("Ban da chon them mot nhan vien: \n");
+
     printf("Vui long nhap vi tri ban muon them: ");
     char err1[] = "Vui long vi tri la so nguyen!";
     viTriThem = checkInputInteger(err1);
-    nvm = nhap1NV(ds);
-    themNV(ds, nvm, viTriThem - 1);
-    printf("\nDanh sach sau khi them: ");
-    xuatDanhSachNV(ds);
+    if (viTriThem < 1 || viTriThem > ds.n + 1)
+    {
+        printf("Vui long nhap vi tri > 0 va < %d\n", ds.n + 1);
+        case1(ds);
+    }
+    else
+    {
+        nvm = nhap1NV(ds);
+        themNV(ds, nvm, viTriThem - 1);
+        printf("\t--------------------------------");
+        printf("\n\tDanh sach nhan vien sau khi them");
+        printf("\n\t--------------------------------");
+        xuatDanhSachNV(ds);
+    }
 }
-
+// case 2:
 void case2(danhSach ds)
 {
     printf("Ban da chon tim nhan vien theo ma so.\n");
@@ -169,7 +179,7 @@ void case2(danhSach ds)
         xuat1NV(ds.a[ketQua]);
     }
 }
-
+// case 3:
 void case3(danhSach ds)
 {
     printf("Ban da chon tim nhan vien theo ten.\n");
@@ -185,9 +195,58 @@ void case3(danhSach ds)
     }
     else
     {
+        printf("\t-----------------------------");
+        printf("\n\tDanh sach nhan vien co ten: %s", c);
+        printf("\n\t-----------------------------");
         xuatDanhSachNV(dsKetQua);
     }
 }
+// case 4
+void case4(danhSach ds)
+{
+    printf("Ban da chon danh sach nhan vien theo luong giam dan.\n");
+    sapXep(ds);
+};
+// case 5
+void case5(danhSach &ds)
+{
+    printf("Ban da chon xoa nhan vien theo ma.\n");
+    printf("Vui long nhap MSNV can xoa: ");
+    int maXoa = -1;
+    char err5[] = "Vui long nhap ma so la so nguyen!";
+    maXoa = checkInputInteger(err5);
+    int ketQua = timTheoMa(ds, maXoa);
+    if (ketQua == -1)
+    {
+        printf("Khong tim thay nhan vien co ma: %d", maXoa);
+    }
+    else
+    {
+        printf("Xac nhan xoa nhan vien co ma: %d\n", maXoa);
+        printf("Nhap Y/y = 'Xoa' hoac N/n = 'Huy'\n");
+        printf("Xac nhan: ");
+        char xacNhan;
+        while (true)
+        {
+            scanf(" %c", &xacNhan);
+            if (xacNhan == 'y' || xacNhan == 'Y')
+            {
+                xoaNV(ds, ketQua);
+                printf("Xoa thanh cong nhan vien ma: %d\n", maXoa);
+                return;
+            }
+            else if (xacNhan == 'n' || xacNhan == 'N')
+            {
+                printf("Da huy xoa");
+                return;
+            }
+            else
+            {
+                printf("Khong hop le. Vui long nhap 'Y/y' or 'N/n': ");
+            }
+        }
+    }
+};
 
 int checkInputInteger(char err[1000])
 {
@@ -208,13 +267,34 @@ int checkInputInteger(char err[1000])
     } while (result != 1);
     return num;
 };
+
 // tham chiếu
 nhanVien nhap1NV(danhSach &ds)
 {
     nhanVien nv;
     printf("\tMoi nhap MSNV: ");
     char errMa[] = "Ma nhan vien la so nguyen!";
-    nv.msnv = checkInputInteger(errMa);
+    while (true)
+    {
+        nv.msnv = checkInputInteger(errMa);
+        int check = timTheoMa(ds, nv.msnv);
+        if (check != -1)
+        {
+            printf("Ma nhan vien da ton tai!");
+            printf("\n\tVui long nhap lai MSNV: ");
+            continue;
+        }
+        else if (nv.msnv < 0)
+        {
+            printf("Ma nhan vien > 0 ");
+            printf("\n\tVui long nhap lai MSNV: ");
+            continue;
+        }
+        else
+        {
+            break;
+        }
+    }
     fflush(stdin);
     printf("\tMoi nhap ho: ");
     gets(nv.ho);
@@ -240,12 +320,20 @@ void nhapDanhSachNV(danhSach &ds)
     printf("\nNhap so luong nhan vien: ");
     char err[] = "Vui long nhap so luong la so nguyen!";
     ds.n = checkInputInteger(err);
-    for (int i = 0; i < ds.n; i++)
+    if (ds.n < 0 || ds.n > 100)
     {
-        printf("Vui long nhap thong tin nhan vien thu %d:\n", i + 1);
-        nhanVien nv = nhap1NV(ds);
-        ds.a[i] = nv;
-    };
+        printf("Vui long nhap so luong > 0 va < 100");
+        nhapDanhSachNV(ds);
+    }
+    else
+    {
+        for (int i = 0; i < ds.n; i++)
+        {
+            printf("Vui long nhap thong tin nhan vien thu %d:\n", i + 1);
+            nhanVien nv = nhap1NV(ds);
+            ds.a[i] = nv;
+        };
+    }
 };
 
 void nhapNgayThang(date &ntn)
@@ -271,7 +359,7 @@ void xuat1NV(nhanVien nv)
     printf("\n\tNgay sinh: ");
     xuatNgayThang(nv.namSinh);
     printf(" - Noi sinh: %s", nv.noiSinh);
-    printf("\n\tDia chi: %s - Luong: %.0f $", nv.diaChi, nv.luong);
+    printf("\n\tDia chi: %s - Luong: %.0f vnd", nv.diaChi, nv.luong);
     printf("\n\tNgay vao: ");
     xuatNgayThang(nv.ngayVao);
 }
@@ -280,41 +368,48 @@ void xuatNgayThang(date ntn)
 {
     printf("%d/%d/%d", ntn.ngay, ntn.thang, ntn.nam);
 }
+
 void xuatDanhSachNV(danhSach ds)
 {
-    printf("\n\t-------------------");
-    printf("\n\tDanh sach nhan vien");
-    printf("\n\t-------------------");
-    for (int i = 0; i < ds.n; i++)
+    if (ds.n == 0)
     {
-        printf("\nNhan vien thu %d", i + 1);
-        xuat1NV(ds.a[i]);
+        printf("\nDanh sach nhan vien trong!\n");
+    }
+    else
+    {
+        for (int i = 0; i < ds.n; i++)
+        {
+            printf("\nNhan vien thu %d", i + 1);
+            xuat1NV(ds.a[i]);
+        }
     }
 }
 
-int kiemTraNgayThang(Date &ntn)
+int kiemTraNgayThang(date &ntn)
 {
     int t = ntn.thang;
     int n = ntn.ngay;
     switch (t)
     {
+        // Những tháng có 31 ngày
     case 1:
     case 3:
     case 5:
     case 7:
     case 8:
     case 10:
-    case 12: // Những tháng có 31 ngày
+    case 12:
         if (n < 0 || n > 31)
         { // Nếu ngày > 31 xuất thông báo k hợp lệ trả về 0
             printf("Ngay %d Thang %d Nam %d khong hop le!\n", n, t, ntn.nam);
             return 0;
         }
         break;
+    // Những tháng  có 30 ngày
     case 4:
     case 6:
     case 9:
-    case 11: // Những tháng  có 30 ngày
+    case 11:
         if (n < 0 || n > 30)
         { // Nếu ngày > 30 xuất thông báo k hợp lệ trả về 0
             printf("Ngay %d Thang %d Nam %d khong hop le!\n", n, t, ntn.nam);
@@ -345,6 +440,7 @@ int kiemTraNgayThang(Date &ntn)
     }
     return 1;
 }
+
 int kiemTraNamNhuan(int nam)
 {
     // Kiểm tra nếu là năm nhuận trả về 1 ngược lại trả về 0
@@ -354,6 +450,7 @@ int kiemTraNamNhuan(int nam)
     }
     return 0;
 };
+
 void themNV(danhSach &ds, nhanVien &nv, int viTri)
 {
     ds.n++;
@@ -364,16 +461,16 @@ void themNV(danhSach &ds, nhanVien &nv, int viTri)
     ds.a[viTri] = nv;
 };
 
-int timTheoMa(danhSach ds, int viTri)
+int timTheoMa(danhSach ds, int ma)
 {
     for (int i = 0; i < ds.n; i++)
     {
-        if (ds.a[i].msnv == viTri)
+        if (ds.a[i].msnv == ma)
         {
             return i;
         }
-        return -1;
     }
+    return -1;
 };
 
 void timTheoTen(danhSach ds, char *c, danhSach &dsKetQua)
@@ -386,4 +483,38 @@ void timTheoTen(danhSach ds, char *c, danhSach &dsKetQua)
             themNV(dsKetQua, ds.a[i], dsKetQua.n);
         }
     }
+};
+
+void sapXep(danhSach ds)
+{
+    for (int i = 0; i < ds.n - 1; i++)
+    {
+        for (int j = i + 1; j < ds.n; j++)
+        {
+            if (ds.a[i].luong < ds.a[j].luong)
+            {
+                swap(ds.a[i], ds.a[j]);
+            }
+        }
+    }
+    printf("\t-------------------------------");
+    printf("\n\tDanh sach nhan sau khi sap xep: ");
+    printf("\n\t---------------------------------");
+    xuatDanhSachNV(ds);
+};
+
+void swap(nhanVien &a, nhanVien &b)
+{
+    nhanVien temp = a;
+    a = b;
+    b = temp;
+};
+
+void xoaNV(danhSach &ds, int vt)
+{
+    for (int i = vt; i < ds.n; i++)
+    {
+        ds.a[i] = ds.a[i + 1];
+    }
+    ds.n--;
 };
